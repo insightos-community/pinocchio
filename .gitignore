@@ -20,3 +20,6 @@ plot.html
 .cache/
 compile_commands.json
 .ruff_cache/
+
+# Local musl build outputs
+.musl-work/

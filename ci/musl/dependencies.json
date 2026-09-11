@@ -1,0 +1,32 @@
+{
+  "eigenpy": {
+    "url": "https://github.com/stack-of-tasks/eigenpy.git",
+    "commit": "1532d34af4790830e2ba5773dc8ffaefc56f6198",
+    "cmake_submodule": true
+  },
+  "coal": {
+    "url": "https://github.com/coal-library/coal.git",
+    "commit": "b5eef8d0b9b769e76e42e7c9d9bd6b453986f668",
+    "cmake_submodule": true
+  },
+  "console_bridge": {
+    "url": "https://github.com/ros/console_bridge.git",
+    "commit": "0828d846f2d4940b4e2b5075c6c724991d0cd308",
+    "cmake_submodule": false
+  },
+  "urdfdom_headers": {
+    "url": "https://github.com/ros/urdfdom_headers.git",
+    "commit": "7b1b3a44509985b953526dcd1fffacd3b2f92615",
+    "cmake_submodule": false
+  },
+  "urdfdom": {
+    "url": "https://github.com/ros/urdfdom.git",
+    "commit": "3f6bf9a608065464bb6c2828af6e96c8f577f2bf",
+    "cmake_submodule": false
+  },
+  "octomap": {
+    "url": "https://github.com/OctoMap/octomap.git",
+    "commit": "007a0b5b6e4d3bb6c54f2c65a12234e03adcd72f",
+    "cmake_submodule": false
+  }
+}

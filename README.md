@@ -1,3 +1,5 @@
+> **InsightOS musl fork:** see [build, release and runtime instructions](ci/musl/README.md). The `insightos/musl` branch maintains the tested upstream version.
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/stack-of-tasks/pinocchio/devel/doc/images/pinocchio-logo-large.png" width="800" alt="Pinocchio Logo" align="center"/>
 </p>

@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ec28225..5f37b8d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -166,9 +166,9 @@ ADD_PROJECT_DEPENDENCY(Boost REQUIRED serialization filesystem)
+ if(COAL_ENABLE_LOGGING)
+   ADD_PROJECT_DEPENDENCY(Boost REQUIRED log)
+ endif()
+-if(BUILD_PYTHON_INTERFACE)
++if(BUILD_PYTHON_INTERFACE AND Boost_VERSION_STRING VERSION_LESS "1.89.0")
+   find_package(Boost REQUIRED COMPONENTS system)
+-endif(BUILD_PYTHON_INTERFACE)
++endif()
+ 
+ if(Boost_VERSION_STRING VERSION_LESS 1.81)
+   # Default C++ version should be C++11

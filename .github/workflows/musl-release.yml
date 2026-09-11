@@ -1,0 +1,83 @@
+name: Musl build and release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [insightos/musl]
+    tags: ["musl-v3.9.0-*"]
+  pull_request:
+    branches: [insightos/musl]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: musl-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  MUSL_IMAGE: python:3.13-alpine3.23@sha256:75f27d686432419c9d42420b2b9ef605868c7a0682a6be10a6601fad46c2df01
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Build and test in musl
+        shell: bash
+        run: |
+          MUSL_WORK="$RUNNER_TEMP/musl"
+          echo "MUSL_WORK=$MUSL_WORK" >> "$GITHUB_ENV"
+          mkdir -p "$MUSL_WORK"
+          docker run --rm --cpus=2 --memory=12g --memory-swap=12g --pids-limit=1024 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/src,readonly" \
+            --mount "type=bind,src=$MUSL_WORK,dst=/work" \
+            "$MUSL_IMAGE" sh /src/ci/musl/build.sh
+
+      - name: Upload build products
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: musl-dist
+          path: ${{ runner.temp }}/musl/dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: musl-logs
+          path: ${{ runner.temp }}/musl/logs/
+          if-no-files-found: warn
+          retention-days: 14
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/musl-v3.9.0-')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: musl-dist
+          path: dist
+      - name: Publish verified release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          (cd dist && sha256sum -c SHA256SUMS)
+          if gh release view "$RELEASE_TAG" --json isDraft > release-state.json 2>/dev/null; then
+            python3 -c 'import json; assert json.load(open("release-state.json"))["isDraft"], "Refusing to replace a published release"'
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TAG" --notes-file dist/RELEASE_NOTES.md
+          fi
+          shopt -s nullglob
+          assets=(dist/*.whl dist/*.tar.gz dist/SHA256SUMS dist/build-manifest.json)
+          gh release upload "$RELEASE_TAG" "${assets[@]}" --clobber
+          gh release edit "$RELEASE_TAG" --draft=false
