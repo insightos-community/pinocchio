@@ -120,3 +120,20 @@ See the [complete installer and repository index](https://github.com/insightos-c
 platform locks and end-to-end validation. Local build commands do not publish a
 Release. Publishing requires repository write access and a new version tag;
 existing release tags/assets should not be replaced.
+
+## Windows x64
+
+The native Windows component preview is `windows-v3.9.0-preview.1`. It provides
+CPython 3.13 / NumPy 2.3.5 wheels with URDF and collision support and records
+compilation and standalone verification revisions separately. See
+[the Windows recipe](ci/windows/README.md) for the locked dependency inputs and
+verification scope. In an x64 Visual Studio developer PowerShell with Miniconda
+and uv 0.12.12, use a fresh checkout and empty build/output directories:
+
+```powershell
+git checkout windows-v3.9.0-preview.1
+$env:GITHUB_WORKSPACE = (Get-Location).Path
+$env:RUNNER_TEMP = Join-Path $env:TEMP 'semantic-pinocchio-windows-build'
+New-Item -ItemType Directory -Force $env:RUNNER_TEMP | Out-Null
+./ci/windows/build.ps1
+```
