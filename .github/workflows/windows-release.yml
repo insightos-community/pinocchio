@@ -1,0 +1,64 @@
+name: Windows build and release
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/windows-release]
+    tags: ['windows-v3.9.0-*']
+  pull_request:
+    paths: ['ci/windows/**', '.github/workflows/windows-release.yml']
+permissions:
+  contents: read
+concurrency:
+  group: windows-pinocchio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167
+        with:
+          auto-activate-base: false
+          activate-environment: ''
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756
+        with:
+          arch: x64
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          version: 0.12.12
+      - name: Build native Pinocchio and validate standalone wheels
+        shell: pwsh
+        run: ./ci/windows/build.ps1
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pinocchio-windows-cp313
+          path: |
+            dist/
+            ${{ runner.temp }}/pinocchio-build/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: warn
+  release:
+    if: startsWith(github.ref, 'refs/tags/windows-v3.9.0-')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: pinocchio-windows-cp313
+          path: output
+      - name: Publish verified prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          artifact_dir="$(find output -name SHA256SUMS -printf '%h\n')"
+          cd "$artifact_dir"
+          sha256sum -c SHA256SUMS
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --prerelease --title "Pinocchio 3.9.0 / Windows CPython 3.13" --notes "Native Pinocchio with locked EigenPy/Coal DLL dependencies; standalone CPython, URDF, mesh and collision checks passed. See validation report and dependency lock."
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" ./*
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false
