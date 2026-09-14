@@ -317,3 +317,11 @@ If you have participated in the development of **Pinocchio**, please add your na
 ## Acknowledgments
 
 The development of **Pinocchio** is actively supported by the [Gepetto team](http://projects.laas.fr/gepetto/) [@LAAS-CNRS](http://www.laas.fr) and the [Willow team](https://www.di.ens.fr/willow/) [@INRIA](http://www.inria.fr).
+
+## InsightOS Windows build
+
+For the Windows x64 / CPython 3.13.15 / NumPy 2.3.5 recipe, dependency lock,
+standalone wheel verification and release workflow, see
+[ci/windows/README.md](ci/windows/README.md). This builds Pinocchio from source
+and repackages pinned EigenPy/Coal dependencies; a successful standalone
+validation report is required before publishing a Windows prerelease.
