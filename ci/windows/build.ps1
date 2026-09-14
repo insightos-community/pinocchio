@@ -1,4 +1,6 @@
 $ErrorActionPreference = 'Stop'
+git submodule update --init --depth 1 cmake
+if ($LASTEXITCODE -ne 0) { throw 'Pinned CMake submodule checkout failed' }
 $prefix = Join-Path $env:RUNNER_TEMP 'pinocchio-build-env'
 $stage = Join-Path $env:RUNNER_TEMP 'pinocchio-installed'
 $build = Join-Path $env:RUNNER_TEMP 'pinocchio-build'
