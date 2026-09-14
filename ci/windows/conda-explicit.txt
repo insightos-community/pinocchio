@@ -67,3 +67,4 @@ https://conda.anaconda.org/conda-forge/win-64/libboost-python-devel-1.88.0-py313
 https://conda.anaconda.org/conda-forge/win-64/eigenpy-3.12.0-py313ha543fc9_2.conda#ac0cf517d9317e544303a9beb69f03c8
 https://conda.anaconda.org/conda-forge/win-64/coal-python-3.0.2-py313h12e5f7f_1.conda#a01c447d929cfc4dae8f941f9d897fc9
 https://conda.anaconda.org/conda-forge/win-64/coal-3.0.2-hfa70ccb_1.conda#808c49ff2eb1ed62bb161dab1eca02b3
+https://conda.anaconda.org/conda-forge/noarch/hpp-fcl-3.0.2-pyh7b2473d_0.conda#a97631c3e7c8a50b4fcdffe66b7876b9

@@ -544,6 +544,14 @@
       "url": "https://conda.anaconda.org/conda-forge/win-64/coal-3.0.2-hfa70ccb_1.conda",
       "sha256": "490d9b482f2246742e5fea429aec5010fe114ebacfbde447aa5017268647ce38",
       "md5": "808c49ff2eb1ed62bb161dab1eca02b3"
+    },
+    {
+      "name": "hpp-fcl",
+      "version": "3.0.2",
+      "build": "pyh7b2473d_0",
+      "url": "https://conda.anaconda.org/conda-forge/noarch/hpp-fcl-3.0.2-pyh7b2473d_0.conda",
+      "sha256": "b24cbf7fb881d2c2e46eac4ad1c98f31c9e0aac3a8b1ad1df057328131885e41",
+      "md5": "a97631c3e7c8a50b4fcdffe66b7876b9"
     }
   ]
 }
