@@ -6,9 +6,11 @@ private-DLL wheels. Those dependencies are pinned binary inputs, not rebuilt
 from source by this workflow. Conda is a build tool; the validation environment
 uses a separate standalone CPython 3.13.15 and NumPy 2.3.5.
 
-The locked EigenPy headers contain a stringized MSVC `__pragma` argument.
-`patch_eigenpy.py` corrects that one build-header spelling before compilation;
-it checks the expected original text and leaves the binary dependency intact.
+The locked EigenPy headers gate MSVC pragmas on the non-predefined `WIN32`
+spelling and stringize a token argument to `__pragma`. `patch_eigenpy.py`
+corrects those two build-header spellings; it checks the expected original text
+and leaves the binary dependency intact. A native syntax-only header preflight
+exercises both deprecated-file and allocator macros before the full build.
 
 Use an x64 Visual Studio 2022 developer PowerShell with Miniconda and uv 0.12.12
 on PATH. Start from a fresh checkout and empty temporary/output directories:

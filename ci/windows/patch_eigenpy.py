@@ -8,9 +8,10 @@ import sys
 
 header = Path(sys.argv[1]) / 'Library/include/eigenpy/fwd.hpp'
 text = header.read_text(encoding='utf-8')
-old = '#define EIGENPY_PRAGMA(x) __pragma(#x)'
-new = '#define EIGENPY_PRAGMA(x) __pragma(x)'
-if text.count(old) != 1:
-    raise RuntimeError('Locked EigenPy pragma changed; review this patch before building')
-header.write_text(text.replace(old, new), encoding='utf-8')
+for old, new in [('#elif defined(WIN32)', '#elif defined(EIGENPY_MSVC_COMPILER)'),
+                 ('#define EIGENPY_PRAGMA(x) __pragma(#x)', '#define EIGENPY_PRAGMA(x) __pragma(x)')]:
+    if text.count(old) != 1:
+        raise RuntimeError('Locked EigenPy pragma changed; review this patch before building')
+    text = text.replace(old, new)
+header.write_text(text, encoding='utf-8')
 print('Repaired EigenPy MSVC __pragma argument')
