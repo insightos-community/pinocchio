@@ -44,6 +44,9 @@ jobs:
     permissions:
       contents: write
     steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        persist-credentials: false
     - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         name: pinocchio-windows-cp313
@@ -52,19 +55,11 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
         TAG: ${{ github.ref_name }}
-      run: 'artifact_dir="$(find output -name SHA256SUMS -printf ''%h\n'')"
+      run: 'mapfile -t directories < <(find output -name SHA256SUMS -printf ''%h\n'')
 
-        cd "$artifact_dir"
+        test "${#directories[@]}" = 1
 
-        sha256sum -c SHA256SUMS
-
-        gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --prerelease --title "Pinocchio 3.9.0 / Windows
-        CPython 3.13" --notes "Native Pinocchio with locked EigenPy/Coal DLL dependencies; standalone CPython, URDF,
-        mesh and collision checks passed. See validation report and dependency lock."
-
-        gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" ./*
-
-        gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false
+        ARTIFACT_DIR="${directories[0]}" python3 ci/windows/publish.py
 
         '
   revalidate:

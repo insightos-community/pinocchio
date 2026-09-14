@@ -2,7 +2,7 @@
 import hashlib,json,os,re,subprocess
 from pathlib import Path
 
-root=Path('output')
+root=Path(os.environ.get('ARTIFACT_DIR','output'))
 tag=os.environ['TAG']
 repo=os.environ['GITHUB_REPOSITORY']
 if not re.fullmatch(r'windows-v3\.9\.0-[A-Za-z0-9][A-Za-z0-9.-]*',tag):
