@@ -1,4 +1,6 @@
 $ErrorActionPreference = 'Stop'
+$env:SEMANTIC_PINOCCHIO_SOURCE_COMMIT = (git rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0) { throw 'Source identity lookup failed' }
 git submodule update --init --depth 1 cmake
 if ($LASTEXITCODE -ne 0) { throw 'Pinned CMake submodule checkout failed' }
 $prefix = Join-Path $env:RUNNER_TEMP 'pinocchio-build-env'
@@ -42,8 +44,6 @@ $env:PATH = "$(Split-Path $standalone);$env:SystemRoot/System32;$env:SystemRoot"
 $env:PYTHONPATH = ''
 $env:PYTHONNOUSERSITE = '1'
 Rename-Item $prefix "$prefix-unavailable"
-$env:SEMANTIC_PINOCCHIO_SOURCE_COMMIT = (git rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0) { throw 'Source identity lookup failed' }
 & $verifyPython ci/windows/verify.py "$dist/windows-validation.json"
 if ($LASTEXITCODE -ne 0) { throw 'Standalone validation failed' }
 Copy-Item ci/windows/conda-lock.json $dist
