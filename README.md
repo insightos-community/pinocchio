@@ -19,7 +19,7 @@
 </p>
 
 <!--Pinocchio: a C++ library for efficient Rigid Multi-body Dynamics computations
-===========
+====
 -->
 
 **Pinocchio** instantiates the state-of-the-art Rigid Body Algorithms for poly-articulated systems based on revisited Roy Featherstone's algorithms.
@@ -325,3 +325,7 @@ standalone wheel verification and release workflow, see
 [ci/windows/README.md](ci/windows/README.md). This builds Pinocchio from source
 and repackages pinned EigenPy/Coal dependencies; a successful standalone
 validation report is required before publishing a Windows prerelease.
+
+## Reproducible platform builds
+
+See [glibc, musl and macOS build instructions](README.build.md) for pinned source revisions, exact scripts, tool requirements, local commands, CI reproduction and platform support boundaries.
