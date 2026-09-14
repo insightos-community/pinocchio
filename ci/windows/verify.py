@@ -4,6 +4,9 @@ from pathlib import Path
 import numpy as np
 import eigenpy, coal, pinocchio as pin
 import semantic_windows_native
+import re
+source_commit = os.environ['SEMANTIC_PINOCCHIO_SOURCE_COMMIT']
+assert re.fullmatch('[0-9a-f]{40}', source_commit)
 assert sys.version_info[:2] == (3,13)
 assert np.__version__ == '2.3.5'
 assert pin.__version__ == '3.9.0'
@@ -44,6 +47,6 @@ for path in loaded:
     if Path(path).name.lower().startswith(('msvcp140', 'vcruntime140', 'concrt140')):
         assert any(Path(path).resolve().is_relative_to(root.resolve())
                    for root in [private_dlls, Path(sys.base_prefix)]), path
-report={'python':sys.version,'numpy':np.__version__,'pinocchio':pin.__version__,'urdf_mesh_collision':True,'fk_rnea':True,'loaded_modules':loaded}
+report={'source_commit':source_commit,'python':sys.version,'numpy':np.__version__,'pinocchio':pin.__version__,'urdf_mesh_collision':True,'fk_rnea':True,'loaded_modules':loaded}
 Path(sys.argv[1]).write_text(json.dumps(report,indent=2))
 print('PASS standalone CPython, FK/RNEA, URDF, mesh loading, collision and DLL closure')
