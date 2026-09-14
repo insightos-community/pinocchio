@@ -39,3 +39,10 @@ The [workflow](../../.github/workflows/windows-release.yml) runs on
 `windows-v3.9.0-*` tag creates a prerelease only after build and standalone
 verification succeed. This component does not qualify the Semantic installer
 or GPU rendering; use the validation report for the exact tested scope.
+
+If compilation succeeded but a verification-only check needs correction, dispatch
+the workflow with `artifact_run_id` set to that completed push run. Revalidation
+rejects any change outside the verifier, its workflow/README and revalidation
+script, records both the actual build revision and verifier revision, and installs
+the original wheels offline into a fresh standalone Python. NumPy's own
+`numpy.libs` CRT is an allowed bundled dependency; runner-global CRTs remain rejected.

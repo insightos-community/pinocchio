@@ -37,6 +37,7 @@ for module in modules[:needed.value//ctypes.sizeof(ctypes.c_void_p)]:
     assert ctypes.windll.kernel32.GetModuleFileNameW(ctypes.c_void_p(module),buffer,len(buffer))
     loaded.append(buffer.value)
 private_dlls = Path(semantic_windows_native.__file__).parent / '.libs'
+numpy_dlls = Path(np.__file__).parent.parent / 'numpy.libs'
 assert (private_dlls/'msvcp140.dll').is_file()
 assert (private_dlls/'vcruntime140.dll').is_file()
 for path in loaded:
@@ -46,7 +47,7 @@ for path in loaded:
     # conceal an incomplete archive. The base interpreter may own its CRT.
     if Path(path).name.lower().startswith(('msvcp140', 'vcruntime140', 'concrt140')):
         assert any(Path(path).resolve().is_relative_to(root.resolve())
-                   for root in [private_dlls, Path(sys.base_prefix)]), path
-report={'source_commit':source_commit,'python':sys.version,'numpy':np.__version__,'pinocchio':pin.__version__,'urdf_mesh_collision':True,'fk_rnea':True,'loaded_modules':loaded}
+                   for root in [private_dlls, numpy_dlls, Path(sys.base_prefix)]), path
+report={'source_commit':source_commit,'verification_commit':os.environ.get('SEMANTIC_PINOCCHIO_VERIFICATION_COMMIT',source_commit),'python':sys.version,'numpy':np.__version__,'pinocchio':pin.__version__,'urdf_mesh_collision':True,'fk_rnea':True,'loaded_modules':loaded}
 Path(sys.argv[1]).write_text(json.dumps(report,indent=2))
 print('PASS standalone CPython, FK/RNEA, URDF, mesh loading, collision and DLL closure')
