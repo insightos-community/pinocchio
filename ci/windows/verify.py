@@ -3,6 +3,7 @@ import ctypes, hashlib, importlib.metadata, json, os, sys, tempfile
 from pathlib import Path
 import numpy as np
 import eigenpy, coal, pinocchio as pin
+import semantic_windows_native
 assert sys.version_info[:2] == (3,13)
 assert np.__version__ == '2.3.5'
 assert pin.__version__ == '3.9.0'
@@ -32,9 +33,17 @@ for module in modules[:needed.value//ctypes.sizeof(ctypes.c_void_p)]:
     buffer=ctypes.create_unicode_buffer(32768)
     assert ctypes.windll.kernel32.GetModuleFileNameW(ctypes.c_void_p(module),buffer,len(buffer))
     loaded.append(buffer.value)
+private_dlls = Path(semantic_windows_native.__file__).parent / '.libs'
+assert (private_dlls/'msvcp140.dll').is_file()
+assert (private_dlls/'vcruntime140.dll').is_file()
 for path in loaded:
     assert 'pinocchio-build-env' not in path.lower(),path
     assert 'miniconda' not in path.lower(),path
+    # The hosted runner has VC redistributables installed. Do not let those
+    # conceal an incomplete archive. The base interpreter may own its CRT.
+    if Path(path).name.lower().startswith(('msvcp140', 'vcruntime140', 'concrt140')):
+        assert any(Path(path).resolve().is_relative_to(root.resolve())
+                   for root in [private_dlls, Path(sys.base_prefix)]), path
 report={'python':sys.version,'numpy':np.__version__,'pinocchio':pin.__version__,'urdf_mesh_collision':True,'fk_rnea':True,'loaded_modules':loaded}
 Path(sys.argv[1]).write_text(json.dumps(report,indent=2))
 print('PASS standalone CPython, FK/RNEA, URDF, mesh loading, collision and DLL closure')

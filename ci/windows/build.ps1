@@ -9,6 +9,8 @@ conda create --yes --prefix $prefix --file ci/windows/conda-explicit.txt
 if ($LASTEXITCODE -ne 0) { throw 'Conda build environment failed' }
 $env:PATH = "$prefix;$prefix/Library/bin;$prefix/Scripts;$env:PATH"
 $python = Join-Path $prefix 'python.exe'
+& $python ci/windows/patch_eigenpy.py $prefix
+if ($LASTEXITCODE -ne 0) { throw 'EigenPy MSVC header patch failed' }
 & $python -c "import numpy, eigenpy, coal; assert numpy.__version__ == '2.3.5'"
 if ($LASTEXITCODE -ne 0) { throw 'Build dependency imports failed' }
 cmake -S . -B $build -G Ninja "-DCMAKE_PREFIX_PATH=$prefix/Library" "-DCMAKE_INSTALL_PREFIX=$stage" "-DPYTHON_EXECUTABLE=$python" "-DPYTHON_SITELIB=$stage/Lib/site-packages" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_BENCHMARK=OFF -DBUILD_EXAMPLES=OFF -DBUILD_PYTHON_INTERFACE=ON -DBUILD_WITH_URDF_SUPPORT=ON -DBUILD_WITH_COLLISION_SUPPORT=ON -DBUILD_WITH_EXTRA_SUPPORT=OFF -DBUILD_WITH_OPENMP_SUPPORT=OFF -DGENERATE_PYTHON_STUBS=OFF '-DCMAKE_CXX_FLAGS=/bigobj /EHsc'
