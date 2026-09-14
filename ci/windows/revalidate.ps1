@@ -11,7 +11,7 @@ git fetch --no-tags --depth=1 origin $buildCommit
 if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect original build source' }
 $changed = @(git diff --name-only $buildCommit HEAD)
 if ($LASTEXITCODE -ne 0) { throw 'Source comparison failed' }
-$allowed = @('ci/windows/verify.py','ci/windows/revalidate.ps1','ci/windows/README.md','.github/workflows/windows-release.yml')
+$allowed = @('ci/windows/verify.py','ci/windows/revalidate.ps1','ci/windows/publish.py','ci/windows/README.md','.github/workflows/windows-release.yml')
 foreach ($file in $changed) { if ($file -notin $allowed) { throw "Compiled input changed: $file" } }
 $inputDirectory = Join-Path $env:RUNNER_TEMP 'original-native-artifact'
 gh run download $RunId --repo $env:GITHUB_REPOSITORY --name pinocchio-windows-cp313 --dir $inputDirectory

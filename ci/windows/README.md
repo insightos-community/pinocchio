@@ -46,3 +46,8 @@ rejects any change outside the verifier, its workflow/README and revalidation
 script, records both the actual build revision and verifier revision, and installs
 the original wheels offline into a fresh standalone Python. NumPy's own
 `numpy.libs` CRT is an allowed bundled dependency; runner-global CRTs remain rejected.
+
+The optional `publish_tag` dispatch input publishes these revalidated wheels as
+a Windows prerelease. The release records the original compilation revision and
+the separate verification revision. Published matching releases are preserved
+on retry; an existing release with different provenance is rejected.

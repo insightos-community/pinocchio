@@ -89,11 +89,35 @@ jobs:
         name: pinocchio-windows-cp313
         path: dist/*
         if-no-files-found: error
+  publish_revalidated:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_tag != ''
+    needs: revalidate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        persist-credentials: false
+    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        name: pinocchio-windows-cp313
+        path: output
+    - name: Publish the verified component prerelease
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TAG: ${{ inputs.publish_tag }}
+      run: python3 ci/windows/publish.py
 'on':
   workflow_dispatch:
     inputs:
       artifact_run_id:
         description: Revalidate compiled wheels from this run; only verification files may differ
+        required: false
+        type: string
+        default: ''
+      publish_tag:
+        description: Optional Windows prerelease tag after artifact revalidation
         required: false
         type: string
         default: ''
