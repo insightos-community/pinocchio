@@ -50,7 +50,7 @@ for source in (prefix/'conda-meta').glob('*.json'):
     target = licenses / record['name']
     target.mkdir()
     (target/'metadata.json').write_text(json.dumps({k:record.get(k) for k in ['name','version','build','license','url','sha256']},indent=2))
-    extracted = Path(record.get('extracted_package_dir', ''))
+    extracted = Path(record.get('extracted_package_dir') or record.get('link', {}).get('source', ''))
     if extracted.is_dir() and (extracted/'info/licenses').is_dir():
         shutil.copytree(extracted/'info/licenses', target/'texts')
 shutil.copyfile(Path(__file__).parents[2]/'LICENSE', licenses/'pinocchio-LICENSE')
